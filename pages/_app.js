@@ -3,9 +3,8 @@ import Head from 'next/head';
 import { ThemeProvider } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
 import { CacheProvider } from '@emotion/react';
-import theme from '../src/theme';
-import createEmotionCache from '../src/createEmotionCache';
-
+import theme from '@src/theme';
+import createEmotionCache from '@src/createEmotionCache';
 import Dashboard from '@components/dashboard/Dashboard';
 
 // Client-side cache, shared for the whole session of the user in the browser.
@@ -30,8 +29,9 @@ export default function MyApp(props) {
   );
 }
 
-MyApp.propTypes = {
-  Component: PropTypes.elementType.isRequired,
-  emotionCache: PropTypes.object,
-  pageProps: PropTypes.object.isRequired,
-};
+// TODO fix error when using PropTypes
+// MyApp.propTypes = {
+//   Component: PropTypes.elementType.isRequired,
+//   emotionCache: PropTypes.object,
+//   pageProps: PropTypes.object.isRequired,
+// };

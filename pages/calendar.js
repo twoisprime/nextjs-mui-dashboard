@@ -1,7 +1,6 @@
 import React from 'react'
 import dynamic from 'next/dynamic'
-
-import Container from "@mui/material/Container";
+import { useRouter } from 'next/router'
 
 const DynamicComponentWithNoSSR = dynamic(
   () => import('@components/Calendar'),
@@ -9,8 +8,10 @@ const DynamicComponentWithNoSSR = dynamic(
 )
 
 const Calendar = () => {
+  const router = useRouter();
+  const { locale } = router;
   return (
-    <DynamicComponentWithNoSSR />
+    <DynamicComponentWithNoSSR locale={locale} />
   );
 };
 
