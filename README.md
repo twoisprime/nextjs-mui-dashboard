@@ -2,29 +2,16 @@
 
 ## How to use
 
-Download the example [or clone the repo](https://github.com/mui-org/material-ui):
+This dashboard is based on the example found in this [repository](https://github.com/mui-org/material-ui):
 
-<!-- #default-branch-switch -->
-
-```sh
-curl https://codeload.github.com/mui-org/material-ui/tar.gz/master | tar -xz --strip=2  material-ui-master/examples/nextjs
-cd nextjs
-```
-
-Install it and run:
+Clone the repo, install it and run:
 
 ```sh
+git clone https://github.com/twoisprime/nextjs-mui-dashboard.git
+cd nextjs-mui-dashboard
 npm install
 npm run dev
 ```
-
-or:
-
-<!-- #default-branch-switch -->
-
-[![Edit on StackBlitz](https://developer.stackblitz.com/img/open_in_stackblitz.svg)](https://stackblitz.com/github/mui-org/material-ui/tree/master/examples/nextjs)
-
-[![Edit on CodeSandbox](https://codesandbox.io/static/img/play-codesandbox.svg)](https://codesandbox.io/s/github/mui-org/material-ui/tree/master/examples/nextjs)
 
 ## The idea behind the example
 
@@ -39,8 +26,6 @@ The example folder provides adapters for usage with MUI.
 More information [in the documentation](https://mui.com/guides/routing/#next-js).
 
 ## What's next?
-
-<!-- #default-branch-switch -->
 
 You now have a working example project.
 You can head back to the documentation, continuing browsing it from the [templates](https://mui.com/getting-started/templates/) section.
