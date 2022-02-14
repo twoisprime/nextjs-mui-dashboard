@@ -1,9 +1,9 @@
 {
     "compilerOptions": {
-        "baseUrl": ".",
-        "paths": {
-        "@components/*": ["components/*", "components/dashboard/*"],
-        "@src/*": ["src/*"]
+            "baseUrl": ".",
+            "paths": {
+            "@components/*": ["components/*", "components/dashboard/*"],
+            "@src/*": ["src/*"],
         }
     }
 }

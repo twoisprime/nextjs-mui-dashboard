@@ -6,8 +6,21 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import SecurityIcon from '@mui/icons-material/Security';
 import FileCopyIcon from '@mui/icons-material/FileCopy';
 import { esES as xdgES} from '@mui/x-data-grid';
-import { useRouter } from 'next/router'
+import { useRouter } from 'next/router';
+import useSWR from 'swr';
 
+
+const fetcher = (...args) => fetch(...args).then((res) => res.json());
+
+export function useCustomers() {
+    const { data, error } = useSWR(`/api/customers/`, fetcher)
+  
+    return {
+      customers: data,
+      isLoading: !error && !data,
+      isError: error
+    }
+};
 
 function CustomToolbar() {
   return (
@@ -77,20 +90,7 @@ const columns = [
   },
 ];
 
-const rows = [
-  { id: 1, lastName: 'Snow', firstName: 'Jon', age: 35 },
-  { id: 2, lastName: 'Lannister', firstName: 'Cersei', age: 42 },
-  { id: 3, lastName: 'Lannister', firstName: 'Jaime', age: 45 },
-  { id: 4, lastName: 'Stark', firstName: 'Arya', age: 16 },
-  { id: 5, lastName: 'Targaryen', firstName: 'Daenerys', age: null },
-  { id: 6, lastName: 'Melisandre', firstName: null, age: 150 },
-  { id: 7, lastName: 'Clifford', firstName: 'Ferrara', age: 44 },
-  { id: 8, lastName: 'Frances', firstName: 'Rossini', age: 36 },
-  { id: 9, lastName: 'Roxie', firstName: 'Harvey', age: 65 },
-];
-
 export default function Datatable() {
-
   const router = useRouter();
   const { locale } = router;
 
@@ -99,6 +99,35 @@ export default function Datatable() {
     localeText = xdgES.components.MuiDataGrid.defaultProps.localeText;
   }
 
+  const { customers, isLoading, isError } = useCustomers();
+
+  if (isLoading) {
+    return (
+      <Grid container spacing={3}>
+        <Grid item xs={12}>
+          <Paper sx={{ p: 2, display: 'flex', flexDirection: 'column' }}>
+            <div style={{ height: 700, width: '100%' }}>
+              <DataGrid
+                localeText={localeText}
+                rows={[]}
+                columns={columns}
+                // pageSize={5}
+                // rowsPerPageOptions={[5]}
+                // checkboxSelection
+                disableSelectionOnClick
+                components={{
+                  Toolbar: CustomToolbar,
+                }}
+              />
+            </div>
+          </Paper>
+        </Grid>
+      </Grid>
+    );
+  }
+  // if (isError) return <Error />
+  // return <img src={user.avatar} />
+
   return (
     <Grid container spacing={3}>
       <Grid item xs={12}>
@@ -106,7 +135,7 @@ export default function Datatable() {
           <div style={{ height: 700, width: '100%' }}>
             <DataGrid
               localeText={localeText}
-              rows={rows}
+              rows={customers}
               columns={columns}
               // pageSize={5}
               // rowsPerPageOptions={[5]}
