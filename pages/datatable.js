@@ -5,6 +5,9 @@ import { DataGrid, GridToolbarContainer, GridToolbarExport, GridActionsCellItem 
 import DeleteIcon from '@mui/icons-material/Delete';
 import SecurityIcon from '@mui/icons-material/Security';
 import FileCopyIcon from '@mui/icons-material/FileCopy';
+import { esES as xdgES} from '@mui/x-data-grid';
+import { useRouter } from 'next/router'
+
 
 function CustomToolbar() {
   return (
@@ -88,12 +91,21 @@ const rows = [
 
 export default function Datatable() {
 
+  const router = useRouter();
+  const { locale } = router;
+
+  let localeText = null;
+  if (locale === 'es') {
+    localeText = xdgES.components.MuiDataGrid.defaultProps.localeText;
+  }
+
   return (
     <Grid container spacing={3}>
       <Grid item xs={12}>
         <Paper sx={{ p: 2, display: 'flex', flexDirection: 'column' }}>
           <div style={{ height: 700, width: '100%' }}>
             <DataGrid
+              localeText={localeText}
               rows={rows}
               columns={columns}
               // pageSize={5}
