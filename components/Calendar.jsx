@@ -15,9 +15,6 @@ export const StyleWrapper = styled.div`
     color: #ff3b30
   },
 
-  .fc fc-button-primary {
-    background-color: #ff3b30;
-  }
 `
 
 export default (props) => {

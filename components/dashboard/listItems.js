@@ -76,6 +76,21 @@ export const MainListItems = () => {
           <ListItemText primary={t('Reports')} />
         </ListItem>
       </Link>
+      <Link 
+        href='/login'
+        sx={{ 
+            color: 'black', 
+            opacity: 0.7,
+            textDecoration: 'none'
+          }}
+      >
+        <ListItem button>
+          <ListItemIcon>
+            <LayersIcon />
+          </ListItemIcon>
+          <ListItemText primary={t('Login')} />
+        </ListItem>
+      </Link>
     </div>
   );
 };
