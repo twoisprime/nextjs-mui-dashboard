@@ -8,6 +8,7 @@ import FileCopyIcon from '@mui/icons-material/FileCopy';
 import { esES as xdgES} from '@mui/x-data-grid';
 import { useRouter } from 'next/router';
 import useSWR from 'swr';
+import Layout from '@components/dashboard/Dashboard';
 
 
 const fetcher = (...args) => fetch(...args).then((res) => res.json());
@@ -150,4 +151,10 @@ export default function Datatable() {
       </Grid>
     </Grid>
   );
+}
+
+Datatable.getLayout = function getLayout(page) {
+  return (
+    <Layout>{page}</Layout>
+  )
 }

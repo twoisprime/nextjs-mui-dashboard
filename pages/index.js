@@ -5,6 +5,7 @@ import Box from '@mui/material/Box';
 import ProTip from '@src/ProTip';
 import Link from '@src/Link';
 import LocaleSwitcher from '@components/LocaleSwitcher';
+import Layout from '@components/dashboard/Dashboard';
 
 export default function Index() {
   return (
@@ -21,4 +22,10 @@ export default function Index() {
       </Box>
     </Container>
   );
+}
+
+Index.getLayout = function getLayout(page) {
+  return (
+    <Layout>{page}</Layout>
+  )
 }

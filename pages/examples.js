@@ -5,6 +5,9 @@ import Chart from '@components/dashboard/Chart';
 import Deposits from '@components/dashboard/Deposits';
 import Orders from '@components/dashboard/Orders';
 
+import Layout from '@components/dashboard/Dashboard';
+
+
 export default function Examples() {
   return (
     <Grid container spacing={3}>
@@ -42,4 +45,10 @@ export default function Examples() {
       </Grid>
     </Grid>
   );
+}
+
+Examples.getLayout = function getLayout(page) {
+  return (
+    <Layout>{page}</Layout>
+  )
 }

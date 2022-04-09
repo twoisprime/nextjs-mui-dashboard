@@ -7,7 +7,6 @@ import AdapterDayjs from '@mui/lab/AdapterDayjs';
 import LocalizationProvider from '@mui/lab/LocalizationProvider';
 import theme from '@src/theme';
 import createEmotionCache from '@src/createEmotionCache';
-import Dashboard from '@components/dashboard/Dashboard';
 
 import '@src/global.css'
 
@@ -16,6 +15,8 @@ const clientSideEmotionCache = createEmotionCache();
 
 export default function MyApp(props) {
   const { Component, emotionCache = clientSideEmotionCache, pageProps } = props;
+  // Use the layout defined at the page level, if available
+  const getLayout = Component.getLayout || ((page) => page)
 
   return (
     <CacheProvider value={emotionCache}>
@@ -27,9 +28,7 @@ export default function MyApp(props) {
         <CssBaseline />
         {/* Localization required for MUI date pickers */}
         <LocalizationProvider dateAdapter={AdapterDayjs}>
-          <Dashboard>
-            <Component {...pageProps} />
-          </Dashboard>
+          {getLayout(<Component {...pageProps} />)}
         </LocalizationProvider>
       </ThemeProvider>
     </CacheProvider>

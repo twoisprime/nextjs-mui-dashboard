@@ -5,6 +5,7 @@ import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import ProTip from '../src/ProTip';
 import Link from '../src/Link';
+import Layout from '@components/dashboard/Dashboard';
 
 export default function About() {
   return (
@@ -20,4 +21,10 @@ export default function About() {
       </Box>
     </Container>
   );
+}
+
+About.getLayout = function getLayout(page) {
+  return (
+    <Layout>{page}</Layout>
+  )
 }
