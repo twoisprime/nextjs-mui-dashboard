@@ -9,6 +9,8 @@ import theme from '@src/theme';
 import createEmotionCache from '@src/createEmotionCache';
 import Dashboard from '@components/dashboard/Dashboard';
 
+import '@src/global.css'
+
 // Client-side cache, shared for the whole session of the user in the browser.
 const clientSideEmotionCache = createEmotionCache();
 

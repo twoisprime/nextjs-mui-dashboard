@@ -1,3 +1,9 @@
-.active {
+/* .active {
     opacity: 1;
+} */
+
+:root {
+    --primary: "red";
+    --fc-button-bg-color: #ff3b30;
 }
+
