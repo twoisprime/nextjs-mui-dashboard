@@ -7,6 +7,8 @@ import AdapterDayjs from '@mui/lab/AdapterDayjs';
 import LocalizationProvider from '@mui/lab/LocalizationProvider';
 import theme from '@src/theme';
 import createEmotionCache from '@src/createEmotionCache';
+import { SWRConfig } from 'swr';
+import fetchJson from '@lib/fetchJson';
 
 import '@src/global.css'
 
@@ -28,7 +30,16 @@ export default function MyApp(props) {
         <CssBaseline />
         {/* Localization required for MUI date pickers */}
         <LocalizationProvider dateAdapter={AdapterDayjs}>
-          {getLayout(<Component {...pageProps} />)}
+          <SWRConfig
+            value={{
+              fetcher: fetchJson,
+              onError: (err) => {
+                console.error(err)
+              },
+            }}
+          >
+            {getLayout(<Component {...pageProps} />)}
+          </SWRConfig>
         </LocalizationProvider>
       </ThemeProvider>
     </CacheProvider>

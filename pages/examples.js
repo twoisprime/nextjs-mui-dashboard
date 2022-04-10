@@ -1,12 +1,14 @@
 import Grid from '@mui/material/Grid';
 import Paper from '@mui/material/Paper';
-
 import Chart from '@components/dashboard/Chart';
 import Deposits from '@components/dashboard/Deposits';
 import Orders from '@components/dashboard/Orders';
-
 import Layout from '@components/dashboard/Dashboard';
+import { sessionRoute, sessionOptions } from '@lib/session'
+import { withIronSessionSsr } from 'iron-session/next';
 
+
+export const getServerSideProps = withIronSessionSsr(sessionRoute, sessionOptions)
 
 export default function Examples() {
   return (

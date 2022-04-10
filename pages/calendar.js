@@ -2,6 +2,11 @@ import React from 'react'
 import dynamic from 'next/dynamic'
 import { useRouter } from 'next/router'
 import Layout from '@components/dashboard/Dashboard';
+import { sessionRoute, sessionOptions } from '@lib/session'
+import { withIronSessionSsr } from 'iron-session/next';
+
+
+export const getServerSideProps = withIronSessionSsr(sessionRoute, sessionOptions)
 
 const DynamicComponentWithNoSSR = dynamic(
   () => import('@components/Calendar'),

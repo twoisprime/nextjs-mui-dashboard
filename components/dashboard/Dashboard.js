@@ -10,18 +10,44 @@ import Container from '@mui/material/Container';
 import MenuIcon from '@mui/icons-material/Menu';
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import NotificationsIcon from '@mui/icons-material/Notifications';
+import LogoutIcon from '@mui/icons-material/Logout';
 import { MainListItems, secondaryListItems } from './listItems';
 import Copyright from '@components/dashboard/Copyright';
 import AppBar from '@components/dashboard/AppBar';
 import Drawer from '@components/dashboard/Drawer';
+import Link from '@src/Link';
+import useUser from '@lib/useUser'
+import fetchJson, { FetchError } from '@lib/fetchJson'
 
 
 export default function Dashboard( { children } ) {
+
+  const { mutateUser } = useUser({
+    redirectTo: '/login',
+  })
 
   const [open, setOpen] = React.useState(true);
   const toggleDrawer = () => {
     setOpen(!open);
   };
+
+  const [errorMsg, setErrorMsg] = React.useState('')
+
+  async function handleLogout(event) {
+    event.preventDefault()
+
+    try {
+      mutateUser(
+        await fetchJson('/api/logout')
+      )
+    } catch (error) {
+      if (error instanceof FetchError) {
+        setErrorMsg(error.data.message)
+      } else {
+        console.error('An unexpected error happened:', error)
+      }
+    }
+  }
 
   return (
     <Box sx={{ display: 'flex' }}>
@@ -57,6 +83,15 @@ export default function Dashboard( { children } ) {
               <NotificationsIcon />
             </Badge>
           </IconButton>
+          <Link href='/api/logout' color="inherit" 
+            sx={{ 
+              marginLeft: '12px' 
+            }}
+          >
+            <IconButton color="inherit" onClick={handleLogout}>
+              <LogoutIcon />
+            </IconButton>
+          </Link>
         </Toolbar>
       </AppBar>
       <Drawer variant="permanent" open={open}>

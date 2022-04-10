@@ -9,7 +9,11 @@ import { esES as xdgES} from '@mui/x-data-grid';
 import { useRouter } from 'next/router';
 import useSWR from 'swr';
 import Layout from '@components/dashboard/Dashboard';
+import { sessionRoute, sessionOptions } from '@lib/session'
+import { withIronSessionSsr } from 'iron-session/next';
 
+
+export const getServerSideProps = withIronSessionSsr(sessionRoute, sessionOptions)
 
 const fetcher = (...args) => fetch(...args).then((res) => res.json());
 
