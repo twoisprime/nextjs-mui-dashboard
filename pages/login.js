@@ -10,52 +10,47 @@ import Grid from '@mui/material/Grid';
 import Box from '@mui/material/Box';
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import Typography from '@mui/material/Typography';
-import useUser from '@lib/useUser'
-import fetchJson, { FetchError } from '@lib/fetchJson'
+import { signIn, signOut, useSession } from "next-auth/react"
 
 
 export default function Login() {
-  // here we just check if user is already logged in and redirect to profile
-  const { mutateUser } = useUser({
-    redirectTo: '/',
-    redirectIfFound: true,
-  })
 
-  const [errorMsg, setErrorMsg] = useState('')
+  // const [errorMsg, setErrorMsg] = useState('')
 
-  async function handleSubmit(event) {
-    event.preventDefault()
+  // async function handleSubmit(event) {
+  //   event.preventDefault()
 
-    const body = {
-      email: event.currentTarget.email.value,
-      password: event.currentTarget.password.value
-    }
+  //   const body = {
+  //     email: event.currentTarget.email.value,
+  //     password: event.currentTarget.password.value
+  //   }
 
-    try {
-      mutateUser(
-        await fetchJson('/api/login', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(body),
-        })
-      )
-    } catch (error) {
-      if (error instanceof FetchError) {
-        setErrorMsg(error.data.message)
-      } else {
-        console.error('An unexpected error happened:', error)
-      }
-    }
-  }
+  //   try {
+  //     mutateUser(
+  //       await fetchJson('/api/login', {
+  //         method: 'POST',
+  //         headers: { 'Content-Type': 'application/json' },
+  //         body: JSON.stringify(body),
+  //       })
+  //     )
+  //   } catch (error) {
+  //     if (error instanceof FetchError) {
+  //       setErrorMsg(error.data.message)
+  //     } else {
+  //       console.error('An unexpected error happened:', error)
+  //     }
+  //   }
+  // }
 
-  // const handleSubmit = (event) => {
-  //   event.preventDefault();
-  //   const data = new FormData(event.currentTarget);
-  //   console.log({
-  //     email: data.get('email'),
-  //     password: data.get('password'),
-  //   });
-  // };
+  const handleSubmit = (event) => {
+    event.preventDefault();
+    const data = new FormData(event.currentTarget);
+    console.log({
+      email: data.get('email'),
+      password: data.get('password'),
+    });
+    signIn("credentials", { username: data.get('email'), password: data.get('password') })
+  };
 
   return (
     <Container maxWidth="sm">

@@ -22,15 +22,15 @@
     "paths": {
       "@components/*": ["components/*", "components/dashboard/*"],
       "@src/*": ["src/*"],
-      "@lib/*": ["lib/*"],
       "@api/*": ["pages/api/*"],
+      "@lib/*": ["lib/*"],
     }
   },
   "include": [
     "next-env.d.ts",
     "**/*.ts",
     "**/*.tsx"
-, "pages/api/login.js"  ],
+  ],
   "exclude": [
     "node_modules"
   ],

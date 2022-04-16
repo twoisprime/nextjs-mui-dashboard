@@ -6,13 +6,31 @@ import ProTip from '@src/ProTip';
 import Link from '@src/Link';
 import LocaleSwitcher from '@components/LocaleSwitcher';
 import Layout from '@components/dashboard/Dashboard';
-import { sessionRoute, sessionOptions } from '@lib/session'
-import { withIronSessionSsr } from 'iron-session/next';
+import { useSession } from "next-auth/react";
+import useUser from '@lib/useUser';
 
-export const getServerSideProps = withIronSessionSsr(sessionRoute, sessionOptions)
+export default function Index() {
+  const { status } = useSession({
+    required: true,
+    onUnauthenticated() {
+      // The user is not authenticated, handle it here.
+      console.log("not authenticated!")
+    },
+  });
 
-export default function Index({ user }) {
-  console.log(user)
+  // if (status === "loading") {
+  //   console.log("not authenticated!")
+  // }
+
+  const { user, isLoading, isError } = useUser()
+
+  let email = null;
+
+  if (isLoading) email = 'loading...';
+  if (isError) email = 'error'
+  if (user) email = user.email;
+
+
   return (
     <Container maxWidth="sm">
       <Box sx={{ my: 4 }}>
@@ -20,7 +38,7 @@ export default function Index({ user }) {
           Next.js example
         </Typography>
         <Typography variant="h5" component="h2" gutterBottom>
-          User: { user.id }
+          User: { email }
         </Typography>
         <Link href="/about" color="secondary">
           Go to the about page

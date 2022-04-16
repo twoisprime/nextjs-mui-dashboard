@@ -6,11 +6,6 @@ import Button from '@mui/material/Button';
 import ProTip from '../src/ProTip';
 import Link from '../src/Link';
 import Layout from '@components/dashboard/Dashboard';
-import { sessionRoute, sessionOptions } from '@lib/session'
-import { withIronSessionSsr } from 'iron-session/next';
-
-
-export const getServerSideProps = withIronSessionSsr(sessionRoute, sessionOptions)
 
 export default function About() {
   return (

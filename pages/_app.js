@@ -7,16 +7,19 @@ import AdapterDayjs from '@mui/lab/AdapterDayjs';
 import LocalizationProvider from '@mui/lab/LocalizationProvider';
 import theme from '@src/theme';
 import createEmotionCache from '@src/createEmotionCache';
-import { SWRConfig } from 'swr';
-import fetchJson from '@lib/fetchJson';
+import { SessionProvider } from "next-auth/react"
 
 import '@src/global.css'
 
 // Client-side cache, shared for the whole session of the user in the browser.
 const clientSideEmotionCache = createEmotionCache();
 
-export default function MyApp(props) {
-  const { Component, emotionCache = clientSideEmotionCache, pageProps } = props;
+export default function MyApp({
+  Component,
+  emotionCache = clientSideEmotionCache,
+  pageProps: { session, ...pageProps },
+}) {
+  // const { Component, emotionCache = clientSideEmotionCache, pageProps } = props;
   // Use the layout defined at the page level, if available
   const getLayout = Component.getLayout || ((page) => page)
 
@@ -30,16 +33,9 @@ export default function MyApp(props) {
         <CssBaseline />
         {/* Localization required for MUI date pickers */}
         <LocalizationProvider dateAdapter={AdapterDayjs}>
-          <SWRConfig
-            value={{
-              fetcher: fetchJson,
-              onError: (err) => {
-                console.error(err)
-              },
-            }}
-          >
+          <SessionProvider session={session}>
             {getLayout(<Component {...pageProps} />)}
-          </SWRConfig>
+          </SessionProvider>
         </LocalizationProvider>
       </ThemeProvider>
     </CacheProvider>

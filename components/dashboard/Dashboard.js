@@ -16,15 +16,8 @@ import Copyright from '@components/dashboard/Copyright';
 import AppBar from '@components/dashboard/AppBar';
 import Drawer from '@components/dashboard/Drawer';
 import Link from '@src/Link';
-import useUser from '@lib/useUser'
-import fetchJson, { FetchError } from '@lib/fetchJson'
-
 
 export default function Dashboard( { children } ) {
-
-  const { mutateUser } = useUser({
-    redirectTo: '/login',
-  })
 
   const [open, setOpen] = React.useState(true);
   const toggleDrawer = () => {
@@ -35,18 +28,6 @@ export default function Dashboard( { children } ) {
 
   async function handleLogout(event) {
     event.preventDefault()
-
-    try {
-      mutateUser(
-        await fetchJson('/api/logout')
-      )
-    } catch (error) {
-      if (error instanceof FetchError) {
-        setErrorMsg(error.data.message)
-      } else {
-        console.error('An unexpected error happened:', error)
-      }
-    }
   }
 
   return (
