@@ -6,7 +6,7 @@ import ProTip from '@src/ProTip';
 import Link from '@src/Link';
 import LocaleSwitcher from '@components/LocaleSwitcher';
 import Layout from '@components/dashboard/Dashboard';
-import { useSession } from "next-auth/react";
+import { useSession, getSession } from "next-auth/react";
 import useUser from '@lib/useUser';
 
 export default function Index() {
@@ -54,4 +54,21 @@ Index.getLayout = function getLayout(page) {
   return (
     <Layout>{page}</Layout>
   )
+}
+
+export async function getServerSideProps(context) {
+  const session = await getSession(context)
+
+  if (!session) {
+    return {
+      redirect: {
+        destination: '/login',
+        permanent: false,
+      },
+    }
+  }
+
+  return {
+    props: { session }
+  }
 }

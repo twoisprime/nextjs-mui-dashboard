@@ -6,6 +6,7 @@ import Button from '@mui/material/Button';
 import ProTip from '../src/ProTip';
 import Link from '../src/Link';
 import Layout from '@components/dashboard/Dashboard';
+import { useSession, getSession } from "next-auth/react";
 
 export default function About() {
   return (
@@ -27,4 +28,21 @@ About.getLayout = function getLayout(page) {
   return (
     <Layout>{page}</Layout>
   )
+}
+
+export async function getServerSideProps(context) {
+  const session = await getSession(context)
+
+  if (!session) {
+    return {
+      redirect: {
+        destination: '/login',
+        permanent: false,
+      },
+    }
+  }
+
+  return {
+    props: { session }
+  }
 }

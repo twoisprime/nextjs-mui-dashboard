@@ -9,6 +9,7 @@ import { esES as xdgES} from '@mui/x-data-grid';
 import { useRouter } from 'next/router';
 import useSWR from 'swr';
 import Layout from '@components/dashboard/Dashboard';
+import { useSession, getSession } from "next-auth/react";
 
 const fetcher = (...args) => fetch(...args).then((res) => res.json());
 
@@ -156,4 +157,21 @@ Datatable.getLayout = function getLayout(page) {
   return (
     <Layout>{page}</Layout>
   )
+}
+
+export async function getServerSideProps(context) {
+  const session = await getSession(context)
+
+  if (!session) {
+    return {
+      redirect: {
+        destination: '/login',
+        permanent: false,
+      },
+    }
+  }
+
+  return {
+    props: { session }
+  }
 }

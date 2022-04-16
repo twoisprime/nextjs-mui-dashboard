@@ -10,7 +10,7 @@ import Grid from '@mui/material/Grid';
 import Box from '@mui/material/Box';
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import Typography from '@mui/material/Typography';
-import { signIn, signOut, useSession } from "next-auth/react"
+import { signIn, signOut, useSession, getSession } from "next-auth/react"
 
 
 export default function Login() {
@@ -117,4 +117,21 @@ export default function Login() {
       </Box>
     </Container>
   );
+}
+
+export async function getServerSideProps(context) {
+  const session = await getSession(context)
+
+  if (session) {
+    return {
+      redirect: {
+        destination: '/',
+        permanent: false,
+      },
+    }
+  }
+
+  return {
+    props: { session }
+  }
 }

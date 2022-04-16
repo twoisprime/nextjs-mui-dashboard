@@ -16,6 +16,7 @@ import Copyright from '@components/dashboard/Copyright';
 import AppBar from '@components/dashboard/AppBar';
 import Drawer from '@components/dashboard/Drawer';
 import Link from '@src/Link';
+import { signOut } from "next-auth/react"
 
 export default function Dashboard( { children } ) {
 
@@ -28,6 +29,7 @@ export default function Dashboard( { children } ) {
 
   async function handleLogout(event) {
     event.preventDefault()
+    signOut();
   }
 
   return (
