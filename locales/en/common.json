@@ -5,5 +5,8 @@
   "Calendar": "Calendar",
   "Customers": "Customers",
   "Reports": "Reports",
-  "Login": "Login"
+  "Login": "Login",
+  "Email": "Email",
+  "Password": "Password",
+  "Log In": "Log In"
 }
