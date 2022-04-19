@@ -8,5 +8,6 @@
   "Login": "Login",
   "Email": "Email",
   "Password": "Password",
-  "Log In": "Log In"
+  "Log In": "Log In",
+  "Problem Login": "There was a problem with your login."
 }

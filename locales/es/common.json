@@ -8,5 +8,6 @@
   "Login": "Ingresar",
   "Email": "Correo",
   "Password": "Contraseña",
-  "Log In": "Ingresar"
+  "Log In": "Ingresar",
+  "Problem Login": "Hubo un problema al ingresar."
 }
