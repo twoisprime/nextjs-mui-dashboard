@@ -16,8 +16,8 @@ import CircularProgress from '@mui/material/CircularProgress';
 import useTranslation from 'next-translate/useTranslation'
 import { signIn, getSession } from "next-auth/react"
 import { useRouter } from 'next/router'
-// import Image from 'next/image'
-// import logo from "../public/logo.png"
+import Image from 'next/image'
+import logo from "../public/logo_inverse_cropped.png"
 
 
 const Alert = React.forwardRef(function Alert(props, ref) {
@@ -81,7 +81,7 @@ export default function Login() {
         alignItems: 'center',
         }}
       >
-          {/* <Image src={logo} /> */}
+          <Image src={logo} />
           <Avatar sx={{ m: 1, bgcolor: 'primary.main' }}>
           <LockOutlinedIcon />
           </Avatar>
