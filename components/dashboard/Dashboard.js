@@ -17,19 +17,20 @@ import AppBar from '@components/dashboard/AppBar';
 import Drawer from '@components/dashboard/Drawer';
 import Link from '@src/Link';
 import { signOut } from "next-auth/react"
+import { useRouter } from 'next/router'
 
 export default function Dashboard( { children } ) {
+  const router = useRouter()
 
   const [open, setOpen] = React.useState(true);
   const toggleDrawer = () => {
     setOpen(!open);
   };
 
-  const [errorMsg, setErrorMsg] = React.useState('')
-
   async function handleLogout(event) {
     event.preventDefault()
-    signOut();
+    const data = await signOut({redirect: false})
+    router.push('/login')
   }
 
   return (

@@ -48,7 +48,7 @@ export default function Login() {
     signIn("credentials", { username: data.get('email'), password: data.get('password'), redirect: false }).then(
       function(value) {
         const {error, status, ok, url} = value
-        console.log(value);
+        // console.log(value);
         if (ok) {
           router.push('/')
         } else {
@@ -58,7 +58,7 @@ export default function Login() {
       },
       function(error) {
         setLoading(false);
-        console.log(error);
+        // console.log(error);
       }
     )
   };
@@ -164,14 +164,11 @@ export default function Login() {
 
 export async function getServerSideProps(context) {
   const session = await getSession(context)
-  const { locale } = context
-  console.log(locale)
 
   if (session) {
     return {
       redirect: {
-        // destination: `/${locale}`,
-        destination: '/',
+        destination: `/${context.locale}`,
         permanent: false,
       },
     }
