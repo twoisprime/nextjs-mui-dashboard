@@ -27,7 +27,7 @@ export const MainListItems = () => {
       >
         <ListItem button>
           <ListItemIcon>
-            <DashboardIcon />
+            <DashboardIcon color='primary' />
           </ListItemIcon>
           <ListItemText primary={t('Dashboard')} />
         </ListItem>
@@ -42,7 +42,7 @@ export const MainListItems = () => {
       >
         <ListItem button>
           <ListItemIcon>
-            <CalendarTodayIcon />
+            <CalendarTodayIcon color='primary' />
           </ListItemIcon>
           <ListItemText primary={t('Calendar')} />
         </ListItem>
@@ -57,7 +57,7 @@ export const MainListItems = () => {
       >
         <ListItem button>
           <ListItemIcon>
-            <PeopleIcon />
+            <PeopleIcon color='primary' />
           </ListItemIcon>
           <ListItemText primary={t('Customers')} />
         </ListItem>
@@ -72,7 +72,7 @@ export const MainListItems = () => {
       >
         <ListItem button>
           <ListItemIcon>
-            <BarChartIcon />
+            <BarChartIcon color='primary' />
           </ListItemIcon>
           <ListItemText primary={t('Reports')} />
         </ListItem>
@@ -87,7 +87,7 @@ export const MainListItems = () => {
       >
         <ListItem button>
           <ListItemIcon>
-            <LayersIcon />
+            <LayersIcon color='primary' />
           </ListItemIcon>
           <ListItemText primary={t('Login')} />
         </ListItem>

@@ -13,10 +13,11 @@ import MuiAlert from '@mui/material/Alert';
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import Typography from '@mui/material/Typography';
 import CircularProgress from '@mui/material/CircularProgress';
-import { green } from '@mui/material/colors';
 import useTranslation from 'next-translate/useTranslation'
 import { signIn, getSession } from "next-auth/react"
 import { useRouter } from 'next/router'
+// import Image from 'next/image'
+// import logo from "../public/logo.png"
 
 
 const Alert = React.forwardRef(function Alert(props, ref) {
@@ -26,13 +27,10 @@ const Alert = React.forwardRef(function Alert(props, ref) {
 export default function Login() {
   const { t, lang } = useTranslation('common')
   const router = useRouter()
-  const {error} = router.query
 
   const [loading, setLoading] = React.useState(false);
-  // const [errorMsg, setErrorMsg] = useState('')
-  const initOpen = error !== undefined
   // snackar alerts
-  const [open, setOpen] = useState(initOpen);
+  const [open, setOpen] = useState(false);
 
   const handleSubmit = (event) => {
     event.preventDefault();
@@ -41,8 +39,28 @@ export default function Login() {
       setLoading(true);
     }
 
+    if (open) {
+      setOpen(false);
+    }
+
     const data = new FormData(event.currentTarget);
-    signIn("credentials", { username: data.get('email'), password: data.get('password') })
+    // redirect: false returns a Promise
+    signIn("credentials", { username: data.get('email'), password: data.get('password'), redirect: false }).then(
+      function(value) {
+        const {error, status, ok, url} = value
+        console.log(value);
+        if (ok) {
+          router.push('/')
+        } else {
+          setOpen(true)
+          setLoading(false)
+        }
+      },
+      function(error) {
+        setLoading(false);
+        console.log(error);
+      }
+    )
   };
 
   const handleClose = (event, reason) => {
@@ -63,6 +81,7 @@ export default function Login() {
         alignItems: 'center',
         }}
       >
+          {/* <Image src={logo} /> */}
           <Avatar sx={{ m: 1, bgcolor: 'primary.main' }}>
           <LockOutlinedIcon />
           </Avatar>
@@ -145,10 +164,13 @@ export default function Login() {
 
 export async function getServerSideProps(context) {
   const session = await getSession(context)
+  const { locale } = context
+  console.log(locale)
 
   if (session) {
     return {
       redirect: {
+        // destination: `/${locale}`,
         destination: '/',
         permanent: false,
       },
