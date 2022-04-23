@@ -1,3 +1,4 @@
+import { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import Head from 'next/head';
 import { ThemeProvider } from '@mui/material/styles';
@@ -8,7 +9,10 @@ import LocalizationProvider from '@mui/lab/LocalizationProvider';
 import theme from '@src/theme';
 import createEmotionCache from '@src/createEmotionCache';
 import { SessionProvider } from "next-auth/react"
+import { useRouter } from 'next/router'
+import NProgress from 'nprogress'
 
+import '@src/nprogress.css'
 import '@src/global.css'
 
 // Client-side cache, shared for the whole session of the user in the browser.
@@ -22,6 +26,28 @@ export default function MyApp({
   // const { Component, emotionCache = clientSideEmotionCache, pageProps } = props;
   // Use the layout defined at the page level, if available
   const getLayout = Component.getLayout || ((page) => page)
+
+  const router = useRouter();
+
+  useEffect(() => {
+    const handleStart = (url) => {
+      console.log(`Loading: ${url}`)
+      NProgress.start()
+    }
+    const handleStop = () => {
+      NProgress.done()
+    }
+
+    router.events.on('routeChangeStart', handleStart)
+    router.events.on('routeChangeComplete', handleStop)
+    router.events.on('routeChangeError', handleStop)
+
+    return () => {
+      router.events.off('routeChangeStart', handleStart)
+      router.events.off('routeChangeComplete', handleStop)
+      router.events.off('routeChangeError', handleStop)
+    }
+  }, [router])
 
   return (
     <CacheProvider value={emotionCache}>

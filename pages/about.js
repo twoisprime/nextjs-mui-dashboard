@@ -42,6 +42,10 @@ export async function getServerSideProps(context) {
     }
   }
 
+  await new Promise((resolve) => {
+    setTimeout(resolve, 5000)
+  })
+
   return {
     props: { session }
   }

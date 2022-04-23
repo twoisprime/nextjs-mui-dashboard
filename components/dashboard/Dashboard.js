@@ -69,7 +69,7 @@ export default function Dashboard( { children } ) {
           </IconButton>
           <Link href='/api/logout' color="inherit" 
             sx={{ 
-              marginLeft: '12px' 
+              marginLeft: '12px'
             }}
           >
             <IconButton color="inherit" onClick={handleLogout}>
