@@ -15,6 +15,7 @@ import UTC from 'dayjs/plugin/utc'
 import useUser from '@lib/useUser';
 import useEvents from '@lib/useEvents';
 import { useRouter } from 'next/router'
+import NProgress from 'nprogress'
 import _ from 'lodash';
 
 dayjs.extend(UTC) // use plugin
@@ -98,21 +99,28 @@ const parseEvents = (events) => {
 
 export default (props) => {
   const [openCreateEvent, setOpenCreateEvent] = React.useState(false);
-  const [contentHeight, setContentHeight] = React.useState(undefined);
-  const [visibility, setVisibility] = React.useState(false);
-  const [skeleton, setSkeleton] = React.useState(true);
-  const router = useRouter();
-  const [loading, setLoading] = React.useState(false);
+  // const [contentHeight, setContentHeight] = React.useState(undefined);
+  // const [visibility, setVisibility] = React.useState(false);
+  // const [skeleton, setSkeleton] = React.useState(true);
+  // const router = useRouter();
+  // const [loading, setLoading] = React.useState(false);
   const [parameters, setParameters] = React.useState({
     'start': null,
     'end': null
   });
+
+  const calendarRef = React.useRef()
 
   const { user, userLoading, userError } = useUser()
   const { events, isLoading, isError } = useEvents(user, parameters)
 
   console.log(isLoading)
   console.log(events)
+
+  if (isLoading)
+      NProgress.start()
+  else
+      NProgress.done()
 
   // TODO: doesn't work with contentHeight auto
   const scrollTime = dayjs().format("HH") + ":00:00";
@@ -135,17 +143,27 @@ export default (props) => {
       })
   }
 
-  React.useEffect(() => {
-    console.log("setSkeleton!")
-    setSkeleton(false);
-  }, []);  // empty array means effect only runs once after render
+  // React.useEffect(() => {
+  //   console.log("setSkeleton!")
+  //   setSkeleton(false);
+  // }, []);  // empty array means effect only runs once after render
 
-  React.useEffect(() => {
-    if (!skeleton) {
-      console.log("setVisibility!")
-      setVisibility(true);
-    }
-  }, [skeleton]);  // empty array means effect only runs once after render
+  // React.useEffect(() => {
+  //   if (!skeleton) {
+  //     console.log("setVisibility!")
+  //     setVisibility(true);
+  //   }
+  // }, [skeleton]);  // empty array means effect only runs once after render
+
+  // React.useEffect(() => {
+  //   if (calendarRef.current) {
+  //     console.log(calendarRef)
+  //     console.log("updateSize!")
+  //     const calendarApi = calendarRef.current.getApi()
+  //     // calendarApi.updateSize()
+  //     // calendarApi.render()
+  //   }
+  // });
 
   // React.useEffect(() => {
   //   router.events.on("routeChangeError", (e) => setLoading(false));
@@ -185,58 +203,41 @@ export default (props) => {
 
   return (
     <StyleWrapper>
-      {
-        skeleton ? (
-          <Skeleton variant="rectangular" height={500}/>
-        ) : (
-          <>
-          { 
-            !visibility && <Skeleton variant="rectangular" /> 
-          }
-          <Box
-            sx={{
-              visibility: visibility ? ('visible') : ('hidden'),
-            }}
-          >
-          <FullCalendar
-            locales={[esLocale]}
-            locale={props.locale}
-            plugins={[interactionPlugin, timeGridPlugin, dayGridPlugin, listPlugin]}
-            headerToolbar={{
-              left: 'prev,next today',
-              center: 'title',
-              right: 'dayGridMonth,timeGridWeek,timeGridDay,listDay'
-            }}
-            initialView='timeGridWeek'
-            nowIndicator={true}
-            selectable={true}
-            longPressDelay={200}
-            initialEvents={[
-              { title: 'nice event', start: new Date() }
-            ]}
-            select={handleOpenCreateEvent}
-            scrollTime={scrollTime}
-            contentHeight={contentHeight}
-            slotDuration='00:15:00'
-            slotLabelInterval='00:15:00'
-            slotLabelFormat={{
-              hour: 'numeric',
-              minute: '2-digit',
-              hour12: false
-            }}
-            events= {parseEvents(events)}
-            eventTextColor='rgb(40,40,40)'
-            datesSet={(dateInfo) => {
-              handleParameters({
-                'start': dayjs(dateInfo.startStr).utc().format(),  // UTC iso format
-                'end': dayjs(dateInfo.endStr).utc().format()  //  UTC iso format
-              })
-            }}
-          />
-          </Box>
-          </>
-        ) 
-      }
+      <FullCalendar
+        ref={calendarRef}
+        locales={[esLocale]}
+        locale={props.locale}
+        plugins={[interactionPlugin, timeGridPlugin, dayGridPlugin, listPlugin]}
+        headerToolbar={{
+          left: 'prev,next today',
+          center: 'title',
+          right: 'dayGridMonth,timeGridWeek,timeGridDay,listDay'
+        }}
+        initialView='timeGridWeek'
+        nowIndicator={true}
+        selectable={true}
+        longPressDelay={200}
+        // windowResizeDelay={500}
+        select={handleOpenCreateEvent}
+        scrollTime={scrollTime}
+        // contentHeight={'auto'}  // {contentHeight}
+        stickyHeaderDates={true}
+        slotDuration='00:15:00'
+        slotLabelInterval='00:15:00'
+        slotLabelFormat={{
+          hour: 'numeric',
+          minute: '2-digit',
+          hour12: false
+        }}
+        events= {parseEvents(events)}
+        eventTextColor='rgb(40,40,40)'
+        datesSet={(dateInfo) => {
+          handleParameters({
+            'start': dayjs(dateInfo.startStr).utc().format(),  // UTC iso format
+            'end': dayjs(dateInfo.endStr).utc().format()  //  UTC iso format
+          })
+        }}
+      />
       <FormDialogCreateEvent 
         open={openCreateEvent}
         handleClose={handleCloseCreateEvent}>

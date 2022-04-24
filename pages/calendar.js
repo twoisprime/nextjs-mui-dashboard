@@ -9,11 +9,11 @@ const DynamicComponentWithNoSSR = dynamic(
   { ssr: false }
 )
 
-export default function Calendar() {
+export default function Calendar({drawerOpen}) {
   const router = useRouter();
   const { locale } = router;
   return (
-    <DynamicComponentWithNoSSR locale={locale} />
+    <DynamicComponentWithNoSSR locale={locale} drawerOpen={drawerOpen} />
   );
 };
 
