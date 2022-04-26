@@ -7,7 +7,11 @@ import listPlugin from '@fullcalendar/list'
 import esLocale from '@fullcalendar/core/locales/es';
 import styled from "@emotion/styled";
 import Box from '@mui/material/Box';
+import Popover from '@mui/material/Popover';
+import Typography from '@mui/material/Typography';
 import FormDialogCreateEvent from './FormDialogCreateEvent';
+import Snackbar from '@mui/material/Snackbar';
+import MuiAlert from '@mui/material/Alert';
 import Skeleton from '@mui/material/Skeleton';
 import CircularProgress from '@mui/material/CircularProgress';
 import dayjs from 'dayjs'
@@ -27,6 +31,10 @@ export const StyleWrapper = styled.div`
   },
 
 `
+
+const Alert = React.forwardRef(function Alert(props, ref) {
+  return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
+});
 
 function json_event2calendar(event) {
   // console.log("server: " + event.start)
@@ -98,7 +106,9 @@ const parseEvents = (events) => {
 }
 
 export default (props) => {
+  const router = useRouter()
   const [openCreateEvent, setOpenCreateEvent] = React.useState(false);
+  const [openAlert, setOpenAlert] = React.useState(true); // allow opening alerts
   // const [contentHeight, setContentHeight] = React.useState(undefined);
   // const [visibility, setVisibility] = React.useState(false);
   // const [skeleton, setSkeleton] = React.useState(true);
@@ -112,10 +122,14 @@ export default (props) => {
   const calendarRef = React.useRef()
 
   const { user, userLoading, userError } = useUser()
-  const { events, isLoading, isError } = useEvents(user, parameters)
+  const { events, isLoading, isError, isAuthorized } = useEvents(user, parameters)
 
   console.log(isLoading)
+  console.log(isAuthorized)
   console.log(events)
+
+  if (!isAuthorized)
+      router.push('/login')
 
   if (isLoading)
       NProgress.start()
@@ -142,6 +156,17 @@ export default (props) => {
         'end': end
       })
   }
+
+  const handleCloseAlert = (event, reason) => {
+    if (reason === 'clickaway') {
+      return;
+    }
+    setOpenAlert(false);
+  };
+
+  React.useEffect(() => {
+    setOpenAlert(true);
+  }, [isError]);
 
   // React.useEffect(() => {
   //   console.log("setSkeleton!")
@@ -214,14 +239,17 @@ export default (props) => {
           right: 'dayGridMonth,timeGridWeek,timeGridDay,listDay'
         }}
         initialView='timeGridWeek'
-        nowIndicator={true}
+        // nowIndicator={true}
         selectable={true}
-        longPressDelay={200}
+        // longPressDelay={200}
         // windowResizeDelay={500}
         select={handleOpenCreateEvent}
+        // dateClick={handleOpenCreateEvent}
         scrollTime={scrollTime}
-        // contentHeight={'auto'}  // {contentHeight}
-        stickyHeaderDates={true}
+        contentHeight={'auto'}  // {contentHeight}
+        // height={'100vh'}
+        // aspectRatio={'2'}
+        // stickyHeaderDates={true}
         slotDuration='00:15:00'
         slotLabelInterval='00:15:00'
         slotLabelFormat={{
@@ -239,9 +267,23 @@ export default (props) => {
         }}
       />
       <FormDialogCreateEvent 
+        sx={{
+          position: "absolute",
+          left: 0,
+          bottom: 0
+        }}
         open={openCreateEvent}
         handleClose={handleCloseCreateEvent}>
       </FormDialogCreateEvent>
+      <Snackbar
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+        open={isError && openAlert}
+        onClose={handleCloseAlert}
+      >
+        <Alert onClose={handleCloseAlert} severity="error">
+          Error while loading data
+        </Alert>
+      </Snackbar>
     </StyleWrapper>
   )
 }

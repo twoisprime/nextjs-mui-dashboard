@@ -16,6 +16,7 @@ import CircularProgress from '@mui/material/CircularProgress';
 import useTranslation from 'next-translate/useTranslation'
 import { signIn, getSession } from "next-auth/react"
 import { useRouter } from 'next/router'
+import { useSWRConfig } from 'swr'
 import Image from 'next/image'
 import logo from "../public/logo_inverse_cropped.png"
 
@@ -27,6 +28,9 @@ const Alert = React.forwardRef(function Alert(props, ref) {
 export default function Login() {
   const { t, lang } = useTranslation('common')
   const router = useRouter()
+  // clear swr cached data
+  const { cache } = useSWRConfig()
+  cache.clear()
 
   const [loading, setLoading] = React.useState(false);
   // snackar alerts

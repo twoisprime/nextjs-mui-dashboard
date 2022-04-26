@@ -15,13 +15,13 @@ export default async function handler(req, res) {
     })
     const user = await response.json();
 
-    // console.log(user)
-    res.status(200).json(user)
+    res.status(response.status).json(user)
   } else {
     // Not Signed in
     res.status(401)
   }
 
+  res.end()
 
 //   const user = fetch("http://localhost:8000/users/me/", {
 //     // assign the token as bearer token on your request headers
