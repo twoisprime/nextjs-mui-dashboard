@@ -1,11 +1,12 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import PropTypes from 'prop-types';
 import Head from 'next/head';
-import { ThemeProvider } from '@mui/material/styles';
+import { createTheme, ThemeProvider, useTheme } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
 import { CacheProvider } from '@emotion/react';
 import AdapterDayjs from '@mui/lab/AdapterDayjs';
 import LocalizationProvider from '@mui/lab/LocalizationProvider';
+import * as locales from '@mui/material/locale';
 import theme from '@src/theme';
 import createEmotionCache from '@src/createEmotionCache';
 import { SessionProvider } from "next-auth/react"
@@ -28,6 +29,13 @@ export default function MyApp({
   const getLayout = Component.getLayout || ((page) => page)
 
   const router = useRouter();
+
+  // console.log(router.locale)
+
+  const themeWithLocale = useMemo(
+    () => createTheme(theme, locales[router.locale.replace(/-/g, "")]),  // remove hyphen
+    [router.locale, theme],
+  );
 
   useEffect(() => {
     const handleStart = (url) => {
@@ -54,7 +62,7 @@ export default function MyApp({
       <Head>
         <meta name="viewport" content="initial-scale=1, width=device-width" />
       </Head>
-      <ThemeProvider theme={theme}>
+      <ThemeProvider theme={themeWithLocale}>
         {/* CssBaseline kickstart an elegant, consistent, and simple baseline to build upon. */}
         <CssBaseline />
         {/* Localization required for MUI date pickers */}

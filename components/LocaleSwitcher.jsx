@@ -3,6 +3,9 @@ import { useCallback } from 'react'
 import { useRouter } from 'next/router'
 import { Box, Button, ButtonGroup } from '@mui/material'
 import useTranslation from 'next-translate/useTranslation'
+import dayjs from 'dayjs'
+import 'dayjs/locale/en'
+import 'dayjs/locale/es'
 
 
 export default function LocaleSwitcher() {
@@ -14,7 +17,10 @@ export default function LocaleSwitcher() {
     // Same route different language
     // (locale) => () => router.push(router.route, undefined, { locale }), 
     // change just the locale and maintain all other route information including href's query
-    (nextLocale) => () => router.push({ pathname, query }, asPath, { locale: nextLocale }),
+    (nextLocale) => () => {
+      dayjs.locale(nextLocale)
+      router.push({ pathname, query }, asPath, { locale: nextLocale })
+    },
     [],
   )
   
@@ -25,8 +31,8 @@ export default function LocaleSwitcher() {
         variant="outlined"
         color="primary"
         aria-label="text primary button group">
-        <Button onClick={changeLang('es')}>{t('ES')}</Button>
-        <Button onClick={changeLang('en')}>{t('EN')}</Button>
+        <Button onClick={changeLang('es-ES')}>{t('ES')}</Button>
+        <Button onClick={changeLang('en-US')}>{t('EN')}</Button>
       </ButtonGroup>
     </Box>
   )

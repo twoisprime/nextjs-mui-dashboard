@@ -3,11 +3,16 @@
   "EN": "English",
   "Dashboard": "Dashboard",
   "Calendar": "Calendar",
+  "Customer": "Customer",
   "Customers": "Customers",
+  "User": "User",
+  "Users": "Users",
   "Reports": "Reports",
   "Login": "Login",
   "Email": "Email",
   "Password": "Password",
   "Log In": "Log In",
-  "Problem Login": "There was a problem with your login."
+  "Problem Login": "There was a problem with your login.",
+  "Start": "Start",
+  "End": "End"
 }

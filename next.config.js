@@ -18,7 +18,7 @@ const withTM = require("next-transpile-modules")([
 const nextConfig = {
   reactStrictMode: true,
   i18n: {
-    localeDetection: true,
+    localeDetection: false,
   },
 };
 

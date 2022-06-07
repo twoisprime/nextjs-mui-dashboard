@@ -14,10 +14,15 @@ import Snackbar from '@mui/material/Snackbar';
 import MuiAlert from '@mui/material/Alert';
 import Skeleton from '@mui/material/Skeleton';
 import CircularProgress from '@mui/material/CircularProgress';
+import Autocomplete from '@mui/material/Autocomplete';
+import TextField from '@mui/material/TextField';
 import dayjs from 'dayjs'
 import UTC from 'dayjs/plugin/utc'
+import useTranslation from 'next-translate/useTranslation'
 import useUser from '@lib/useUser';
 import useEvents from '@lib/useEvents';
+import useUsers from '@lib/useUsers';
+import useCustomers from '@lib/useCustomers';
 import { useRouter } from 'next/router'
 import NProgress from 'nprogress'
 import _ from 'lodash';
@@ -107,13 +112,21 @@ const parseEvents = (events) => {
 
 export default (props) => {
   const router = useRouter()
+  const { t, lang } = useTranslation('common')
   const [openCreateEvent, setOpenCreateEvent] = React.useState(false);
+  const [eventSelection, setEventSelection] = React.useState(null);
   const [openAlert, setOpenAlert] = React.useState(true); // allow opening alerts
+  const [professional, setProfessional] = React.useState(null);
   // const [contentHeight, setContentHeight] = React.useState(undefined);
   // const [visibility, setVisibility] = React.useState(false);
   // const [skeleton, setSkeleton] = React.useState(true);
   // const router = useRouter();
   // const [loading, setLoading] = React.useState(false);
+  
+  // popover to select user
+  const [anchorEl, setAnchorEl] = React.useState(null);
+  const open = Boolean(anchorEl);
+
   const [parameters, setParameters] = React.useState({
     'start': null,
     'end': null
@@ -122,11 +135,14 @@ export default (props) => {
   const calendarRef = React.useRef()
 
   const { user, userLoading, userError } = useUser()
-  const { events, isLoading, isError, isAuthorized } = useEvents(user, parameters)
-
-  console.log(isLoading)
-  console.log(isAuthorized)
-  console.log(events)
+  const { users } = useUsers({
+    'active': true,
+    'role': 'professional'
+  })
+  const { events, isLoading, isError, isAuthorized } = useEvents(professional, parameters)
+  const { customers } = useCustomers({
+    'active': true
+  })
 
   if (!isAuthorized)
       router.push('/login')
@@ -139,8 +155,19 @@ export default (props) => {
   // TODO: doesn't work with contentHeight auto
   const scrollTime = dayjs().format("HH") + ":00:00";
 
-  const handleOpenCreateEvent = (arg) => {
-    console.log(arg);
+  const userOptions = users ? users : []
+
+  const defaultProps = {
+    options: userOptions,
+    getOptionLabel: (option) => option.name,
+  };
+
+  const handleOpenCreateEvent = ({allDay, startStr, endStr}) => {
+    setEventSelection({
+      'allDay': allDay,
+      'startStr': startStr,
+      'endStr': endStr
+    });
     setOpenCreateEvent(true);
   };
 
@@ -164,67 +191,27 @@ export default (props) => {
     setOpenAlert(false);
   };
 
+  const handleUserClick = (event) => {
+    setAnchorEl(event.currentTarget);
+  };
+
+  const handleUserClose = () => {
+    setAnchorEl(null);
+  };
+
+  const handleUserSelect = (event, value, reason) => {
+    console.log(value);
+    handleUserClose();
+    setProfessional(value);
+  };
+
   React.useEffect(() => {
     setOpenAlert(true);
   }, [isError]);
 
-  // React.useEffect(() => {
-  //   console.log("setSkeleton!")
-  //   setSkeleton(false);
-  // }, []);  // empty array means effect only runs once after render
-
-  // React.useEffect(() => {
-  //   if (!skeleton) {
-  //     console.log("setVisibility!")
-  //     setVisibility(true);
-  //   }
-  // }, [skeleton]);  // empty array means effect only runs once after render
-
-  // React.useEffect(() => {
-  //   if (calendarRef.current) {
-  //     console.log(calendarRef)
-  //     console.log("updateSize!")
-  //     const calendarApi = calendarRef.current.getApi()
-  //     // calendarApi.updateSize()
-  //     // calendarApi.render()
-  //   }
-  // });
-
-  // React.useEffect(() => {
-  //   router.events.on("routeChangeError", (e) => setLoading(false));
-  //   router.events.on("routeChangeStart", (e) => setLoading(false));
-  //   router.events.on("routeChangeComplete", (e) => setLoading(true));
-
-  //   return () => {
-  //     router.events.off("routeChangeError", (e) => setLoading(false));
-  //     router.events.off("routeChangeStart", (e) => setLoading(false));
-  //     router.events.off("routeChangeComplete", (e) => setLoading(true));
-  //   };
-  // }, [router.events]);
-
-  // if (isLoading) {
-  //   console.log("loading events...")
-  //   return null
-  // }
-  // if (isError) {
-  //   console.log("error events")
-  //   return null
-  // }
-
-  // React.useEffect(() => {
-  //   // main box component in dashboard layout
-  //   const container = document.querySelector('main')
-
-  //   const onScroll = () => {
-  //     console.log("scroll!")
-  //     setContentHeight('auto');
-  //   }
-  //   // clean up code
-  //   container.removeEventListener('scroll', onScroll);
-  //   container.addEventListener('scroll', onScroll);
-  //   container.addEventListener('scroll', onScroll);
-  //   return () => container.removeEventListener('scroll', onScroll);
-  // }, []);
+  React.useEffect(() => {
+    setProfessional(users ? users[0] : null);
+  }, [users]);
 
   return (
     <StyleWrapper>
@@ -236,10 +223,11 @@ export default (props) => {
         headerToolbar={{
           left: 'prev,next today',
           center: 'title',
-          right: 'dayGridMonth,timeGridWeek,timeGridDay,listDay'
+          // right: 'dayGridMonth,timeGridWeek,timeGridDay,listDay'
+          right: 'dayGridMonth,timeGridWeek,listDay myCustomButton'
         }}
         initialView='timeGridWeek'
-        // nowIndicator={true}
+        nowIndicator={true}
         selectable={true}
         // longPressDelay={200}
         // windowResizeDelay={500}
@@ -252,6 +240,8 @@ export default (props) => {
         // stickyHeaderDates={true}
         slotDuration='00:15:00'
         slotLabelInterval='00:15:00'
+        slotMinTime='05:00:00'
+        slotMaxTime='23:59:59'
         slotLabelFormat={{
           hour: 'numeric',
           minute: '2-digit',
@@ -265,6 +255,12 @@ export default (props) => {
             'end': dayjs(dateInfo.endStr).utc().format()  //  UTC iso format
           })
         }}
+        customButtons={{myCustomButton: {
+          text: professional ? professional.name : 'loading...',
+          click: function(event) {
+            handleUserClick(event);
+          }
+        }}}
       />
       <FormDialogCreateEvent 
         sx={{
@@ -273,8 +269,40 @@ export default (props) => {
           bottom: 0
         }}
         open={openCreateEvent}
-        handleClose={handleCloseCreateEvent}>
+        handleClose={handleCloseCreateEvent}
+        eventSelection={eventSelection}
+      >
       </FormDialogCreateEvent>
+      <Popover
+        sx={{mt: 1}}
+        open={open}
+        anchorEl={anchorEl}
+        onClose={handleUserClose}
+        anchorOrigin={{
+          vertical: 'bottom',
+          horizontal: 'left',
+        }}
+        transformOrigin={{
+          vertical: 'top',
+          horizontal: 'center',
+        }}
+      >
+        <Autocomplete
+          {...defaultProps}
+          sx={{
+            m: 1,
+            width: 200
+          }}
+          defaultValue={professional}
+          autoSelect={true}
+          disableClearable={true}
+          renderInput={(params) => (
+            <TextField {...params} label={t('User')} />
+          )}
+          onChange={handleUserSelect}
+          value={professional}
+        />
+      </Popover>
       <Snackbar
         anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
         open={isError && openAlert}

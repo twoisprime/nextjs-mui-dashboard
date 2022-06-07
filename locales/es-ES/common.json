@@ -3,11 +3,16 @@
   "EN": "Inglés",
   "Dashboard": "Panel",
   "Calendar": "Agenda",
+  "Customer": "Cliente",
   "Customers": "Clientes",
+  "User": "Usuario",
+  "Users": "Usuarios",
   "Reports": "Reportes",
   "Login": "Ingresar",
   "Email": "Correo",
   "Password": "Contraseña",
   "Log In": "Ingresar",
-  "Problem Login": "Hubo un problema al ingresar."
+  "Problem Login": "Hubo un problema al ingresar.",
+  "Start": "Empieza",
+  "End": "Termina"
 }
