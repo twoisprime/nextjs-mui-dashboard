@@ -35,6 +35,10 @@ export const StyleWrapper = styled.div`
     color: #ff3b30
   },
 
+  .fc .fc-userSelect-button {
+    background-color: #ff3b30
+  }
+
 `
 
 const Alert = React.forwardRef(function Alert(props, ref) {
@@ -114,6 +118,7 @@ export default (props) => {
   const router = useRouter()
   const { t, lang } = useTranslation('common')
   const [openCreateEvent, setOpenCreateEvent] = React.useState(false);
+  const [openEvent, setOpenEvent] = React.useState(false);
   const [eventSelection, setEventSelection] = React.useState(null);
   const [openAlert, setOpenAlert] = React.useState(true); // allow opening alerts
   const [professional, setProfessional] = React.useState(null);
@@ -134,15 +139,12 @@ export default (props) => {
 
   const calendarRef = React.useRef()
 
-  const { user, userLoading, userError } = useUser()
+  const { user } = useUser()
   const { users } = useUsers({
     'active': true,
     'role': 'professional'
   })
   const { events, isLoading, isError, isAuthorized } = useEvents(professional, parameters)
-  const { customers } = useCustomers({
-    'active': true
-  })
 
   if (!isAuthorized)
       router.push('/login')
@@ -200,7 +202,6 @@ export default (props) => {
   };
 
   const handleUserSelect = (event, value, reason) => {
-    console.log(value);
     handleUserClose();
     setProfessional(value);
   };
@@ -210,8 +211,12 @@ export default (props) => {
   }, [isError]);
 
   React.useEffect(() => {
-    setProfessional(users ? users[0] : null);
-  }, [users]);
+    if (user && users) {
+      // try to get professional from props, from current user, or set default
+      const currentProfessional = _.find(users, {'id': props.professionalID ? props.professionalID : user.id})
+      setProfessional(currentProfessional ? currentProfessional : users[0])  // default professional
+    }
+  }, [user, users]);
 
   return (
     <StyleWrapper>
@@ -224,7 +229,7 @@ export default (props) => {
           left: 'prev,next today',
           center: 'title',
           // right: 'dayGridMonth,timeGridWeek,timeGridDay,listDay'
-          right: 'dayGridMonth,timeGridWeek,listDay myCustomButton'
+          right: 'dayGridMonth,timeGridWeek,listDay userSelect'
         }}
         initialView='timeGridWeek'
         nowIndicator={true}
@@ -249,17 +254,22 @@ export default (props) => {
         }}
         events= {parseEvents(events)}
         eventTextColor='rgb(40,40,40)'
+        eventClick={(info) => {
+          info.jsEvent.preventDefault(); // don't let the browser navigate
+          // open_event_modal(info.event);
+        }}
         datesSet={(dateInfo) => {
           handleParameters({
             'start': dayjs(dateInfo.startStr).utc().format(),  // UTC iso format
             'end': dayjs(dateInfo.endStr).utc().format()  //  UTC iso format
           })
         }}
-        customButtons={{myCustomButton: {
-          text: professional ? professional.name : 'loading...',
-          click: function(event) {
-            handleUserClick(event);
-          }
+        customButtons={{
+          userSelect: {
+            text: professional ? professional.name : 'loading...',
+            click: function(event) {
+              handleUserClick(event);
+            }
         }}}
       />
       <FormDialogCreateEvent 
@@ -271,6 +281,7 @@ export default (props) => {
         open={openCreateEvent}
         handleClose={handleCloseCreateEvent}
         eventSelection={eventSelection}
+        professional={professional}
       >
       </FormDialogCreateEvent>
       <Popover

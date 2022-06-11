@@ -7,6 +7,8 @@
   "Customers": "Clientes",
   "User": "Usuario",
   "Users": "Usuarios",
+  "Service": "Servicio",
+  "Services": "Servicios",
   "Reports": "Reportes",
   "Login": "Ingresar",
   "Email": "Correo",
@@ -14,5 +16,6 @@
   "Log In": "Ingresar",
   "Problem Login": "Hubo un problema al ingresar.",
   "Start": "Empieza",
-  "End": "Termina"
+  "End": "Termina",
+  "Add": "Agregar"
 }

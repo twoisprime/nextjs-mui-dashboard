@@ -12,8 +12,9 @@ const DynamicComponentWithNoSSR = dynamic(
 export default function Calendar() {
   const router = useRouter();
   const { locale } = router;
+  const { professionalID } = router.query
   return (
-    <DynamicComponentWithNoSSR locale={locale} />
+    <DynamicComponentWithNoSSR locale={locale} professionalID={professionalID} />
   );
 };
 

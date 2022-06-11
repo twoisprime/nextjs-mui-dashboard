@@ -7,6 +7,8 @@
   "Customers": "Customers",
   "User": "User",
   "Users": "Users",
+  "Service": "Service",
+  "Services": "Services",
   "Reports": "Reports",
   "Login": "Login",
   "Email": "Email",
@@ -14,5 +16,6 @@
   "Log In": "Log In",
   "Problem Login": "There was a problem with your login.",
   "Start": "Start",
-  "End": "End"
+  "End": "End",
+  "Add": "Add"
 }
