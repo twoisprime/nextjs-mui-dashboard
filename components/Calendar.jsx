@@ -10,8 +10,6 @@ import Box from '@mui/material/Box';
 import Popover from '@mui/material/Popover';
 import Typography from '@mui/material/Typography';
 import FormDialogCreateEvent from './FormDialogCreateEvent';
-import Snackbar from '@mui/material/Snackbar';
-import MuiAlert from '@mui/material/Alert';
 import Skeleton from '@mui/material/Skeleton';
 import CircularProgress from '@mui/material/CircularProgress';
 import Autocomplete from '@mui/material/Autocomplete';
@@ -20,12 +18,16 @@ import dayjs from 'dayjs'
 import UTC from 'dayjs/plugin/utc'
 import useTranslation from 'next-translate/useTranslation'
 import useUser from '@lib/useUser';
-import useEvents from '@lib/useEvents';
+import useEvents, { useEventsKey } from '@lib/useEvents';
 import useUsers from '@lib/useUsers';
 import useCustomers from '@lib/useCustomers';
 import { useRouter } from 'next/router'
+import { useSWRConfig } from 'swr'
 import NProgress from 'nprogress'
 import _ from 'lodash';
+
+import DialogEvent from './DialogEvent'
+import Alert from './Alert'
 
 dayjs.extend(UTC) // use plugin
 
@@ -36,14 +38,10 @@ export const StyleWrapper = styled.div`
   },
 
   .fc .fc-userSelect-button {
-    background-color: #ff3b30
+    background-color: #000000
   }
 
 `
-
-const Alert = React.forwardRef(function Alert(props, ref) {
-  return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
-});
 
 function json_event2calendar(event) {
   // console.log("server: " + event.start)
@@ -117,8 +115,10 @@ const parseEvents = (events) => {
 export default (props) => {
   const router = useRouter()
   const { t, lang } = useTranslation('common')
+  const { mutate } = useSWRConfig()  // revalidation
   const [openCreateEvent, setOpenCreateEvent] = React.useState(false);
   const [openEvent, setOpenEvent] = React.useState(false);
+  const [clickedEvent, setClickedEvent] = React.useState(null);
   const [eventSelection, setEventSelection] = React.useState(null);
   const [openAlert, setOpenAlert] = React.useState(true); // allow opening alerts
   const [professional, setProfessional] = React.useState(null);
@@ -127,6 +127,33 @@ export default (props) => {
   // const [skeleton, setSkeleton] = React.useState(true);
   // const router = useRouter();
   // const [loading, setLoading] = React.useState(false);
+
+  const errorLoadingProps = {
+    "severity": "error",
+    "message": t("Error Load Data")
+  }
+  
+  const errorCreatingProps = {
+    "severity": "error",
+    "message": t("Error Creating")
+  }
+
+  const errorDeletingProps = {
+    "severity": "error",
+    "message": t("Error Deleting")
+  }
+  
+  const successCreatingProps = {
+    "severity": "success",
+    "message": t("Success Creating")
+  }
+
+  const successDeletingProps = {
+    "severity": "success",
+    "message": t("Success Deleting")
+  }
+
+  const [alertProps, setAlertProps] = React.useState(successCreatingProps);
   
   // popover to select user
   const [anchorEl, setAnchorEl] = React.useState(null);
@@ -164,6 +191,11 @@ export default (props) => {
     getOptionLabel: (option) => option.name,
   };
 
+  function revalidateEvents(user, params) {
+    const key = useEventsKey(user, params)
+    mutate(key)
+  }
+
   const handleOpenCreateEvent = ({allDay, startStr, endStr}) => {
     setEventSelection({
       'allDay': allDay,
@@ -173,9 +205,34 @@ export default (props) => {
     setOpenCreateEvent(true);
   };
 
-  const handleCloseCreateEvent = () => {
+  const handleCloseCreateEvent = (status) => {
+    revalidateEvents(professional, parameters)
     setOpenCreateEvent(false);
-  };
+    if (status === 'success') {
+      setAlertProps(successCreatingProps)
+      setOpenAlert(true)
+    } else if (status === 'error') {
+      setAlertProps(errorCreatingProps)
+      setOpenAlert(true)
+    }
+  }
+
+  const handleOpenEvent = (event) => {
+    setOpenEvent(true);
+    setClickedEvent(event);
+  }
+
+  const handleCloseEvent = (status) => {
+    revalidateEvents(professional, parameters)
+    setOpenEvent(false)
+    if (status === 'success') {
+      setAlertProps(successDeletingProps)
+      setOpenAlert(true)
+    } else if (status === 'error') {
+      setAlertProps(errorDeletingProps)
+      setOpenAlert(true)
+    }
+  }
 
   const handleParameters = (params) => {
     const {start, end} = params
@@ -207,13 +264,18 @@ export default (props) => {
   };
 
   React.useEffect(() => {
-    setOpenAlert(true);
+    if (isError) {
+      setAlertProps(errorLoadingProps)
+      setOpenAlert(true)
+    } else {
+      setOpenAlert(false)
+    }
   }, [isError]);
 
   React.useEffect(() => {
     if (user && users) {
       // try to get professional from props, from current user, or set default
-      const currentProfessional = _.find(users, {'id': props.professionalID ? props.professionalID : user.id})
+      const currentProfessional = _.find(users, {'id': props.professionalID ? parseInt(props.professionalID) : user.id})
       setProfessional(currentProfessional ? currentProfessional : users[0])  // default professional
     }
   }, [user, users]);
@@ -234,6 +296,7 @@ export default (props) => {
         initialView='timeGridWeek'
         nowIndicator={true}
         selectable={true}
+        navLinks={true}
         // longPressDelay={200}
         // windowResizeDelay={500}
         select={handleOpenCreateEvent}
@@ -257,6 +320,7 @@ export default (props) => {
         eventClick={(info) => {
           info.jsEvent.preventDefault(); // don't let the browser navigate
           // open_event_modal(info.event);
+          handleOpenEvent(info.event);
         }}
         datesSet={(dateInfo) => {
           handleParameters({
@@ -284,6 +348,18 @@ export default (props) => {
         professional={professional}
       >
       </FormDialogCreateEvent>
+      <DialogEvent
+        sx={{
+          position: "absolute",
+          left: 0,
+          bottom: 0
+        }}
+        open={openEvent}
+        handleClose={handleCloseEvent}
+        event={clickedEvent}
+        professional={professional}
+      >
+      </DialogEvent>
       <Popover
         sx={{mt: 1}}
         open={open}
@@ -314,15 +390,18 @@ export default (props) => {
           value={professional}
         />
       </Popover>
-      <Snackbar
-        anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+      {/* <Alert
         open={isError && openAlert}
-        onClose={handleCloseAlert}
-      >
-        <Alert onClose={handleCloseAlert} severity="error">
-          Error while loading data
-        </Alert>
-      </Snackbar>
+        handleClose={handleCloseAlert}
+        severity={"error"}
+        message={t("Error Load Data")}
+      /> */}
+      <Alert
+        open={openAlert}
+        handleClose={handleCloseAlert}
+        severity={alertProps.severity}
+        message={alertProps.message}
+      />
     </StyleWrapper>
   )
 }

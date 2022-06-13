@@ -18,7 +18,7 @@ export default function LocaleSwitcher() {
     // (locale) => () => router.push(router.route, undefined, { locale }), 
     // change just the locale and maintain all other route information including href's query
     (nextLocale) => () => {
-      dayjs.locale(nextLocale)
+      dayjs.locale(nextLocale.substring(0, 2))
       router.push({ pathname, query }, asPath, { locale: nextLocale })
     },
     [],

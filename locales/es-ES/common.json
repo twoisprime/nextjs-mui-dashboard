@@ -9,6 +9,8 @@
   "Users": "Usuarios",
   "Service": "Servicio",
   "Services": "Servicios",
+  "Appointment": "Cita",
+  "Appointments": "Citas",
   "Reports": "Reportes",
   "Login": "Ingresar",
   "Email": "Correo",
@@ -17,5 +19,12 @@
   "Problem Login": "Hubo un problema al ingresar.",
   "Start": "Empieza",
   "End": "Termina",
-  "Add": "Agregar"
+  "Add": "Agregar",
+  "Create": "Crear",
+  "Confirm": "Confirmar",
+  "Error Load Data": "Error cargando datos.",
+  "Error Creating": "Error creando cita.",
+  "Error Deleting": "Error eliminando cita.",
+  "Success Creating": "Cita creada con éxito.",
+  "Success Deleting": "Cita eliminada con éxito."
 }

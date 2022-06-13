@@ -9,6 +9,8 @@
   "Users": "Users",
   "Service": "Service",
   "Services": "Services",
+  "Appointment": "Appointment",
+  "Appointments": "Appointments",
   "Reports": "Reports",
   "Login": "Login",
   "Email": "Email",
@@ -17,5 +19,12 @@
   "Problem Login": "There was a problem with your login.",
   "Start": "Start",
   "End": "End",
-  "Add": "Add"
+  "Add": "Add",
+  "Create": "Create",
+  "Confirm": "Confirm",
+  "Error Load Data": "Error loading data.",
+  "Error Creating": "Error creating appointment.",
+  "Error Deleting": "Error deleting appointment.",
+  "Success Creating": "Appointment created successfuly.",
+  "Success Deleting": "Appointment deleted successfuly."
 }

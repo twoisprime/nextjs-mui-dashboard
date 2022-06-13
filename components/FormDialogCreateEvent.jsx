@@ -5,7 +5,11 @@ import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
+import Divider from '@mui/material/Divider';
 import DialogTitle from '@mui/material/DialogTitle';
+import Typography from '@mui/material/Typography'
+import IconButton from '@mui/material/IconButton';
+import CloseIcon from '@mui/icons-material/Close';
 import DateTimePicker from '@mui/lab/DateTimePicker';
 import Autocomplete, { createFilterOptions } from '@mui/material/Autocomplete';
 import Stack from '@mui/material/Stack';
@@ -38,9 +42,7 @@ export default function FormDialogCreateEvent({open, handleClose, eventSelection
   const [loadingSave, setLoadingSave] = React.useState(false);
 
   const handleSave = () => {
-    setLoadingSave(true);
-
-    console.log(startDate)
+    setLoadingSave(true)
 
     let eventJSON = {
       "title": customer.name,  // used for schema compliance but now customer name is used directly (except for blocked event)
@@ -63,13 +65,27 @@ export default function FormDialogCreateEvent({open, handleClose, eventSelection
       "events": [eventJSON]
     };
 
-    fetch('/api/services', {
+    fetch('/api/service', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify(serviceJSON),
+    }).then((response) => {
+      if (response.ok) {
+        return response.json();
+      }
+      throw new Error('Something went wrong');
     })
+    .then((responseJson) => {
+      // Do something with the response
+      setLoadingSave(false)
+      handleClose("success")
+    })
+    .catch((error) => {
+      setLoadingSave(false)
+      handleClose("error")
+    });
   }
 
   const renderDate = (props) => {
@@ -102,155 +118,179 @@ export default function FormDialogCreateEvent({open, handleClose, eventSelection
   }, [eventSelection]);
 
   return (
-    <Dialog open={open} onClose={handleClose}>
-      <DialogTitle>Create Event</DialogTitle>
+    <Dialog 
+      open={open} 
+      onClose={handleClose} 
+      fullWidth={true}
+      maxWidth={'sm'}
+    >
+      <DialogTitle>
+        <Typography component="div" variant="h5" m={1}>
+          {t('Create') + ' ' + t('Appointment')}
+        </Typography>
+        
+        <Stack direction="row" spacing={0} m={1}
+          sx={{
+            position: 'absolute',
+            right: 8,
+            top: 8,
+          }}>
+          <IconButton
+            aria-label="close"
+            onClick={handleClose}
+          >
+            <CloseIcon />
+          </IconButton>
+        </Stack>
+        <Divider />
+      </DialogTitle>
       <DialogContent>
-          <Stack spacing={3}>
-            <DialogContentText>
-              To subscribe to this website, please enter your email address here. We
-              will send updates occasionally.
-            </DialogContentText>
-            <Autocomplete
-              options={customerOptions}
-              autoComplete
-              includeInputInList
-              renderOption={(props, option) => {
-                return (
-                  <li {...props} key={option.id}>
-                    {option.name}
-                  </li>
-                );
-              }}
-              renderInput={(params) => (
-                <TextField 
-                  {...params} 
-                  label={t('Customer')}
-                  id="customer"
-                  name="customer"
-                />
-              )}
-              selectOnFocus
-              clearOnBlur
-              handleHomeEndKeys
-              freeSolo
-              onChange={(event, value, reason) => {
-                console.log(value);
-                console.log(reason);
-                setCustomer(value);
-              }}
-              filterOptions={(options, params) => {
-                const filtered = filter(options, params);
-                if (params.inputValue !== '') {
-                  filtered.push({
-                    inputValue: params.inputValue,
-                    id: 'unique-id',
-                    name: `${t('Add')} "${params.inputValue}"`,
-                  });
+        <Stack spacing={3} m={1}>
+          {/* <DialogContentText>
+            To subscribe to this website, please enter your email address here. We
+            will send updates occasionally.
+          </DialogContentText> */}
+          <Autocomplete
+            options={customerOptions}
+            autoComplete
+            includeInputInList
+            renderOption={(props, option) => {
+              return (
+                <li {...props} key={option.id}>
+                  {option.name}
+                </li>
+              );
+            }}
+            renderInput={(params) => (
+              <TextField 
+                {...params} 
+                label={t('Customer')}
+                id="customer"
+                name="customer"
+              />
+            )}
+            selectOnFocus
+            clearOnBlur
+            handleHomeEndKeys
+            freeSolo
+            onChange={(event, value, reason) => {
+              setCustomer(value);
+            }}
+            filterOptions={(options, params) => {
+              const filtered = filter(options, params);
+              if (params.inputValue !== '') {
+                filtered.push({
+                  inputValue: params.inputValue,
+                  id: 'unique-id',
+                  name: `${t('Add')} "${params.inputValue}"`,
+                });
+              }
+              return filtered;
+            }}
+            getOptionLabel={(option) => {
+              // e.g value selected with enter, right from the input
+              if (typeof option === 'string') {
+                return option;
+              }
+              if (option.inputValue) {
+                return option.inputValue;
+              }
+              return option.name;
+            }}
+          />
+          <Autocomplete
+            options={serviceOptions}
+            autoComplete
+            includeInputInList
+            renderOption={(props, option) => {
+              return (
+                <li {...props} key={option.id}>
+                  {option.name}
+                </li>
+              );
+            }}
+            renderInput={(params) => (
+              <TextField {...params} label={t('Service')} />
+            )}
+            selectOnFocus
+            clearOnBlur
+            handleHomeEndKeys
+            freeSolo
+            onChange={(event, value, reason) => {
+              setService(value);
+            }}
+            filterOptions={(options, params) => {
+              const filtered = filter(options, params);
+              if (params.inputValue !== '') {
+                filtered.push({
+                  inputValue: params.inputValue,
+                  id: 'unique-id',
+                  name: `${t('Add')} "${params.inputValue}"`,
+                });
+              }
+              return filtered;
+            }}
+            getOptionLabel={(option) => {
+              // e.g value selected with enter, right from the input
+              if (typeof option === 'string') {
+                return option;
+              }
+              if (option.inputValue) {
+                return option.inputValue;
+              }
+              return option.name;
+            }}
+          />
+          <DateTimePicker
+            renderInput={renderDate}
+            label={t('Start')}
+            value={startDate}
+            ampm={false}
+            onChange={(newStartDate, keyboardInputValue) => {
+              if (keyboardInputValue === undefined) {
+                let diff = newStartDate.diff(startDate, 'minute');
+                let newEndDate = dayjs(endDate);
+                if (diff > 0) {
+                    newEndDate = newEndDate.add(diff, 'minute');
+                } else {
+                    newEndDate = newEndDate.subtract(-diff, 'minute');
+                };
+                setStartDate(newStartDate);
+                setEndDate(newEndDate)
+              }
+            }}
+            minutesStep={5}
+            InputProps={{ readOnly: true }}
+            // shouldDisableTime={(timeValue, clockType) => {
+            //   if (clockType === 'minutes' && timeValue % 5) {
+            //     return true;
+            //   }
+            //   return false;
+            // }}
+          />
+          <DateTimePicker
+            renderInput={renderDate}
+            label={t('End')}
+            value={endDate}
+            ampm={false}
+            minDateTime={dayjs(startDate)}
+            onChange={(newEndDate, keyboardInputValue) => {
+              if (keyboardInputValue === undefined) {
+                let duration = newEndDate.diff(startDate, 'minute');
+                if (duration >= 0) {  // allow valid range only
+                    setEndDate(newEndDate);
                 }
-                return filtered;
-              }}
-              getOptionLabel={(option) => {
-                // e.g value selected with enter, right from the input
-                if (typeof option === 'string') {
-                  return option;
-                }
-                if (option.inputValue) {
-                  return option.inputValue;
-                }
-                return option.name;
-              }}
-            />
-            <Autocomplete
-              options={serviceOptions}
-              autoComplete
-              includeInputInList
-              renderOption={(props, option) => {
-                return (
-                  <li {...props} key={option.id}>
-                    {option.name}
-                  </li>
-                );
-              }}
-              renderInput={(params) => (
-                <TextField {...params} label={t('Service')} />
-              )}
-              selectOnFocus
-              clearOnBlur
-              handleHomeEndKeys
-              freeSolo
-              onChange={(event, value, reason) => {
-                console.log(value);
-                console.log(reason);
-                setService(value);
-              }}
-              filterOptions={(options, params) => {
-                const filtered = filter(options, params);
-                if (params.inputValue !== '') {
-                  filtered.push({
-                    inputValue: params.inputValue,
-                    id: 'unique-id',
-                    name: `${t('Add')} "${params.inputValue}"`,
-                  });
-                }
-                return filtered;
-              }}
-              getOptionLabel={(option) => {
-                // e.g value selected with enter, right from the input
-                if (typeof option === 'string') {
-                  return option;
-                }
-                if (option.inputValue) {
-                  return option.inputValue;
-                }
-                return option.name;
-              }}
-            />
-            <DateTimePicker
-              renderInput={renderDate}
-              label={t('Start')}
-              value={startDate}
-              ampm={false}
-              onChange={(newStartDate, keyboardInputValue) => {
-                if (keyboardInputValue === undefined) {
-                  let diff = newStartDate.diff(startDate, 'minute');
-                  let newEndDate = dayjs(endDate);
-                  if (diff > 0) {
-                      newEndDate = newEndDate.add(diff, 'minute');
-                  } else {
-                      newEndDate = newEndDate.subtract(-diff, 'minute');
-                  };
-                  setStartDate(newStartDate);
-                  setEndDate(newEndDate)
-                }
-              }}
-              minutesStep={5}
-              InputProps={{ readOnly: true }}
-              // shouldDisableTime={(timeValue, clockType) => {
-              //   if (clockType === 'minutes' && timeValue % 5) {
-              //     return true;
-              //   }
-              //   return false;
-              // }}
-            />
-            <DateTimePicker
-              renderInput={renderDate}
-              label={t('End')}
-              value={endDate}
-              ampm={false}
-              minDateTime={dayjs(startDate)}
-              onChange={(newEndDate, keyboardInputValue) => {
-                if (keyboardInputValue === undefined) {
-                  let duration = newEndDate.diff(startDate, 'minute');
-                  if (duration >= 0) {  // allow valid range only
-                      setEndDate(newEndDate);
-                  }
-                }
-              }}
-              minutesStep={5}
-            />
-          </Stack>
+              }
+            }}
+            minutesStep={5}
+          />
+        </Stack>
       </DialogContent>
-      <DialogActions>
+      <DialogActions
+        sx={{
+          mb: 2
+        }}
+      >
         <LoadingButton
           color="secondary"
           loading={loadingSave}
@@ -261,16 +301,6 @@ export default function FormDialogCreateEvent({open, handleClose, eventSelection
         >
           Save
         </LoadingButton>
-        {/* <Button
-          type="submit"
-          fullWidth
-          variant="contained"
-          disabled={loadingSave}
-          sx={{ mt: 3, mb: 2 }}
-        >
-          Save
-        </Button> */}
-                  {/* {t("Log In")} */}
         <Button onClick={handleClose}>Close</Button>
       </DialogActions>
     </Dialog>

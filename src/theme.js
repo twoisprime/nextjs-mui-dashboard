@@ -1,5 +1,5 @@
 import { createTheme, responsiveFontSizes } from '@mui/material/styles';
-import { deepPurple, amber, deepOrange, teal, indigo, lime, blue } from '@mui/material/colors';
+import { deepPurple, amber, deepOrange, teal, indigo, lime, blue, red } from '@mui/material/colors';
 
 // Create a theme instance.
 let theme = createTheme(
@@ -10,6 +10,9 @@ let theme = createTheme(
       },
       secondary: {
         main: blue[600],
+      },
+      terciary: {
+        main: deepOrange[600],
       },
     },
   }
